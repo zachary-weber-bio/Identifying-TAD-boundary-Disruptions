@@ -2,4 +2,9 @@ data/*.cram
 data/*.crai
 data/*.bam
 data/*.bai
+data/toydata/*.cram
+data/toydata/*.crai
+data/toydata/*.bam
+data/toydata/*.bai
+
 reference/*.fa*
