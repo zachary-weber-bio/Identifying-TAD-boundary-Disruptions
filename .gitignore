@@ -1,0 +1,5 @@
+data/*.cram
+data/*.crai
+data/*.bam
+data/*.bai
+reference/*.fa*

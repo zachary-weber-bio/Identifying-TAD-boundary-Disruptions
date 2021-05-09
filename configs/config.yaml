@@ -1,0 +1,26 @@
+# File Name: config.yaml
+# Created By: ZW
+# Created On: 2021-05-06
+# Purpose: configuration file for running MANTA SV caller on WGS from 1000 Genomes
+
+# directory definitions
+working_dir: /Users/zweber/Desktop/TAD_boundary_SV_search/
+tmp: tmp/
+
+reference_fasta: reference/GRCh38_full_analysis_set_plus_decoy_hla.fa
+call_regions: resources/GRCh38DH_call_regions.bed
+sample_file: samples.tsv
+
+# conda environment definitions
+conda:
+    manta: configs/manta-env.yaml
+    samtools: configs/samtools.yaml
+
+# rule-specific parameters
+rule_params:
+    samtools:
+        threads: 4
+    manta:
+        jobs: 8
+        memGB: 8
+        
