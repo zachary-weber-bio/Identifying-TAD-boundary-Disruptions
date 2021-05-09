@@ -4,10 +4,10 @@
 # Purpose: configuration file for running MANTA SV caller on WGS from 1000 Genomes
 
 # directory definitions
-working_dir: /Users/zweber/Desktop/TAD_boundary_SV_search/
+working_dir: <project directory>/Desktop/TAD_boundary_SV_search/
 tmp: tmp/
 
-reference_fasta: reference/GRCh38_full_analysis_set_plus_decoy_hla.fa
+reference_fasta: <reference directory>/GRCh38_full_analysis_set_plus_decoy_hla.fa
 call_regions: resources/GRCh38DH_call_regions.bed
 sample_file: samples.tsv
 
@@ -23,4 +23,3 @@ rule_params:
     manta:
         jobs: 8
         memGB: 8
-        
