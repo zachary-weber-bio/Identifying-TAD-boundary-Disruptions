@@ -1,0 +1,19 @@
+.
+├── manifest.txt
+├── NA18499.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+├── NA18511.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+├── NA18520.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+├── NA18870.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+├── NA18912.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+├── NA19098.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+├── samples.tsv
+└── toydata
+    ├── NA18499.chr17.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+    ├── NA18499.chr17.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram.crai
+    ├── NA18520.chr17.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+    ├── NA18520.chr17.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram.crai
+    ├── NA18870.chr17.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram
+    ├── NA18870.chr17.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram.crai
+    └── samples.tsv
+
+1 directory, 15 files

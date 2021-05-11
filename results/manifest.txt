@@ -1,0 +1,10 @@
+.
+├── manifest.txt
+├── NA18499.chr17_diploidSV.vcf.gz
+├── NA18499.chr17_diploidSV.vcf.gz.tbi
+├── NA18520.chr17_diploidSV.vcf.gz
+├── NA18520.chr17_diploidSV.vcf.gz.tbi
+├── NA18870.chr17_diploidSV.vcf.gz
+└── NA18870.chr17_diploidSV.vcf.gz.tbi
+
+0 directories, 7 files

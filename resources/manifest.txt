@@ -1,0 +1,6 @@
+.
+├── callregions.sorted.bed.gz
+├── callregions.sorted.bed.gz.tbi
+└── manifest.txt
+
+0 directories, 3 files

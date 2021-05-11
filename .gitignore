@@ -6,5 +6,7 @@ data/toydata/*.cram
 data/toydata/*.crai
 data/toydata/*.bam
 data/toydata/*.bai
-
+.snakemake/*
 reference/*.fa*
+results/*.vcf.gz*
+

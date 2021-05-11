@@ -13,49 +13,51 @@ import pandas as pd
 configfile: "configs/config.yaml"
 workdir: config["working_dir"]
 tmpdir = config["tmp"]
+datadir = config["data_dir"]
+resultsdir = config["results_dir"] 
 anaconda_env = config["conda"]
 ref_fasta = config["reference_fasta"]
 call_regions = config["call_regions"]
 samples = pd.read_csv(config["sample_file"],sep="\t")["SampleID"].tolist()
 
-#file format strings
-seqinfo = "alt_bwamem_GRCh38DH.20150718"
-popinfo = "YRI"
-
 # define pipeline output files
 rule all:
     input:
-        expand("data/{sample}.{seqinfo}.{popinfo}.low_coverage.cram.crai",
-                sample=samples,seqinfo=seqinfo, popinfo=popinfo)
+        expand(datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram.crai",sample=samples),
+        expand(resultsdir + "{sample}_diploidSV.vcf.gz",sample=samples),
+        expand(resultsdir + "{sample}_diploidSV.vcf.gz.tbi",sample=samples)
 
 # 1.) index our alignment files with samtools
-rule samtools_index_cram:
-    input:  "data/{sample}.{seqinfo}.{popinfo}.low_coverage.cram"
-    output: "data/{sample}.{seqinfo}.{popinfo}.low_coverage.cram.crai"
+rule samtools_index:
+    input: cram = datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram",
+    params: threads = str(config["rule_params"]["samtools"]["threads"])
+    output: datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram.crai"
     conda: anaconda_env["samtools"]
     shell:
-        "samtools index {input}"
+        "samtools index -@ {params.threads} {input.cram}"
 
 # 2.) run Manta SV calling on each sample to produce a
 # VCF of structural variants found in WGS
+print(samples)
 rule manta_sv_calling:
     input:
-        sample="{sample}"
-        ref_genome="{ref_fasts}"
-        call_regions="{callregions}"
-        bam="data/{sample}.{seqinfo}.{popinfo}.low_coverage.cram"
-        bai="data/{sample}.{seqinfo}.{popinfo}.low_coverage.cram.crai"
-        tmpdir="{tmpdir}"
-        outdir="results/"
-        jobs=config["rule_params"]["manta"]["jobs"]
-        memGB=config["rule_params"]["manta"]["memGB"]
+        ref_genome = ref_fasta,
+	call_regions = call_regions,
+        cram = datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram",
+        crai = datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram.crai",
+    params:
+        sample = "{sample}",
+	tmpdir = tmpdir,
+	outdir = resultsdir,
+	jobs = str(config["rule_params"]["manta"]["jobs"]),
+        memGB = str(config["rule_params"]["manta"]["memGB"])
     output:
-        "results/{sample}_diploidSV.vcf.gz"
-        "results/{sample}_diploidSV.vcf.gz.tbi"
+        resultsdir + "{sample}_diploidSV.vcf.gz",
+        resultsdir + "{sample}_diploidSV.vcf.gz.tbi"
     conda:
         anaconda_env["manta"]
     shell:
-        "./scripts/runManta.sh -b {input.bam} -i {input.bai}"
-            " -c {input.call_regions} -r {input.ref_genome}"
-            " -s {input.sample} -t {input.tmpdir} -o {input.outdir}"
-            " -j {input.jobs} -g {input.memGB}"
+        "./scripts/runManta.sh -b {input.cram} -i {input.crai}"
+        " -s {params.sample} -r {input.ref_genome} -c {input.call_regions}"
+        " -s {params.sample} -t {params.tmpdir} -o {params.outdir}"
+        " -j {params.jobs} -g {params.memGB}"

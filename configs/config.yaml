@@ -4,17 +4,19 @@
 # Purpose: configuration file for running MANTA SV caller on WGS from 1000 Genomes
 
 # directory definitions
-working_dir: <project directory>/Desktop/TAD_boundary_SV_search/
-tmp: tmp/
+working_dir: /project2/nobrega/zach/Identifying-TAD-boundary-Disruptions/
+tmp: /home/zweber/scratch-midway2/SV-calling/
+data_dir: /project2/nobrega/zach/Identifying-TAD-boundary-Disruptions/data/toydata/
+results_dir: /project2/nobrega/zach/Identifying-TAD-boundary-Disruptions/results/
 
-reference_fasta: <reference directory>/GRCh38_full_analysis_set_plus_decoy_hla.fa
-call_regions: resources/GRCh38DH_call_regions.bed
-sample_file: samples.tsv
+reference_fasta: /home/zweber/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa
+sample_file: /project2/nobrega/zach/Identifying-TAD-boundary-Disruptions/data/toydata/samples.tsv
+call_regions: /project2/nobrega/zach/Identifying-TAD-boundary-Disruptions/resources/callregions.sorted.bed.gz
 
 # conda environment definitions
 conda:
     manta: configs/manta-env.yaml
-    samtools: configs/samtools.yaml
+    samtools: configs/samtools-env.yaml
 
 # rule-specific parameters
 rule_params:

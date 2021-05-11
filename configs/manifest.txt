@@ -1,0 +1,8 @@
+.
+├── cluster.json
+├── config.yaml
+├── manifest.txt
+├── manta-env.yaml
+└── samtools-env.yaml
+
+0 directories, 5 files
