@@ -5,7 +5,6 @@
 # and looks for intersections with  approximate TAD boundaries
 
 # module imports
-import glob
 import os.path
 import pandas as pd
 
@@ -16,16 +15,22 @@ tmpdir = config["tmp"]
 datadir = config["data_dir"]
 resultsdir = config["results_dir"] 
 anaconda_env = config["conda"]
-ref_fasta = config["reference_fasta"]
-call_regions = config["call_regions"]
 samples = pd.read_csv(config["sample_file"],sep="\t")["SampleID"].tolist()
+
+#-------------------
+#---------
+#--
+#-
+#
 
 # define pipeline output files
 rule all:
     input:
         expand(datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram.crai",sample=samples),
         expand(resultsdir + "{sample}_diploidSV.vcf.gz",sample=samples),
-        expand(resultsdir + "{sample}_diploidSV.vcf.gz.tbi",sample=samples)
+        expand(resultsdir + "{sample}_diploidSV.vcf.gz.tbi",sample=samples),
+	resultsdir + "SV_TAD-boundary_intersects.sorted.bed",
+	expand(resultsdir + "evidence/{sample}.SVevidence.bam",sample=samples)
 
 # 1.) index our alignment files with samtools
 rule samtools_index:
@@ -38,11 +43,10 @@ rule samtools_index:
 
 # 2.) run Manta SV calling on each sample to produce a
 # VCF of structural variants found in WGS
-print(samples)
 rule manta_sv_calling:
     input:
-        ref_genome = ref_fasta,
-	call_regions = call_regions,
+        ref_genome = config["reference_fasta"],
+	call_regions = config["call_regions"],
         cram = datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram",
         crai = datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram.crai",
     params:
@@ -61,3 +65,42 @@ rule manta_sv_calling:
         " -s {params.sample} -r {input.ref_genome} -c {input.call_regions}"
         " -s {params.sample} -t {params.tmpdir} -o {params.outdir}"
         " -j {params.jobs} -g {params.memGB}"
+
+# 3.) find and enumerate structural variants which are thought to intersect TAD
+# boundary regions in one or more samples
+rule tad_boundary_intersect:
+    input:
+        tad_boundaries = config["tad_boundaries"],
+        sv_calls_vcfs = expand(resultsdir + "{sample}_diploidSV.vcf.gz",sample=samples)
+    params: samples = expand("{sample}",sample=samples)
+    output: sorted_intersects = resultsdir + "SV_TAD-boundary_intersects.sorted.bed"
+    conda: anaconda_env["samtools"]
+    shell:
+        "bedtools intersect -wo -a {input.tad_boundaries} -b {input.sv_calls_vcfs}"
+        " -names {params.samples} | sort -k1,1V -k2,2n > {output.sorted_intersects}"
+
+# 4.) generate "evidence bam" containing reads in the areas where called
+# structural variants have been found.
+rule generate_evidence_bam:
+    input:
+        vcf = resultsdir + "{sample}_diploidSV.vcf.gz",
+        cram = datadir + "{sample}.alt_bwamem_GRCh38DH.20150718.YRI.low_coverage.cram",
+        genome_file = config["genome_file"]
+    params:
+        sample = "{sample}",
+        margin = str(config["rule_params"]["bedtools"]["evidence_roi_margin"])
+    output: resultsdir + "evidence/{sample}.SVevidence.bam"
+    conda: anaconda_env["samtools"]
+    shell:
+        "./scripts/generate_evidence_BAM.sh -s {params.sample}"
+        " -v {input.vcf} -b {input.cram} -m {params.margin}"
+        " -g {input.genome_file} -o {output}"
+
+
+
+
+
+
+
+
+	
